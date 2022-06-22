@@ -1,27 +1,32 @@
 package com.shanncode.cataloguemovie
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.OnReceiveContentListener
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.activity_detaill_movie.view.*
 import kotlinx.android.synthetic.main.movie_item.view.*
 
-
 class MovieAdapter (
-    private val result : List<Result>
+    private val movies : List<Movie>, val listener: OnAdapterListener
 ) :
     RecyclerView.Adapter<MovieAdapter.MovieViewHolder>(){
+
     class MovieViewHolder(view: View) :
         RecyclerView.ViewHolder(view){
-        private val IMAGE_BASE =
-            "https://image.tmdb.org/t/p/w500/"
-        fun bindMovie(result: Result){
-            itemView.movie_title.text = result.title
-            itemView.vote.text = result.vote_average.toString()
-            itemView.popularity.text = result.popularity.toString()
-            itemView.movie_release_date.text = result.release_date
-            Glide.with(itemView).load(IMAGE_BASE + result.poster_path).into(itemView.movie_poster)
+
+        fun bindMovie(movie: Movie){
+            itemView.movie_title.text = movie.title
+            itemView.movie_overview.text = movie.overview
+            itemView.movie_popularity.text = movie.popularity
+            itemView.movie_release_date.text = movie.release
+
+
+            Glide.with(itemView).load(IMAGE_BASE + movie.poster).into(itemView.movie_poster)
+            Log.e("MovieAdapter","URL Image ==> $IMAGE_BASE$ {movie.poster_path}")
         }
     }
 
@@ -31,8 +36,15 @@ class MovieAdapter (
         )
     }
 
-    override fun getItemCount(): Int = result.size
+    override fun getItemCount(): Int = movies.size
+
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.bindMovie(result.get(position))
+        holder.bindMovie(movies[position])
+        holder.itemView.setOnClickListener {listener.onClick(movies[position]) }
+    }
+
+    interface OnAdapterListener {
+        fun onClick(result: Movie)
+
     }
 }
